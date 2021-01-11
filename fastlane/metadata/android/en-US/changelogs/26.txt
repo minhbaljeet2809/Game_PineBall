@@ -1,0 +1,2 @@
+- New table with stars and constellations.
+- Performance and graphics improvements.

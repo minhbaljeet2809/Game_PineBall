@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.dozingcatsoftware.bouncy"
+    android:installLocation="auto">
+
+    <uses-feature android:glEsVersion="0x00020000" android:required="false" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/icon"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.VPTheme" >
+        <!--
+            "uiMode" in android:configChanges prevents the app from restarting when battery saver
+            mode is turned on or off. See https://github.com/flutter/flutter/issues/25626
+        -->
+
+        <activity
+            android:name=".BouncyActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|uiMode"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="AboutActivity" >
+        </activity>
+        <activity android:name="BouncyPreferences" >
+        </activity>
+    </application>
+
+</manifest>
