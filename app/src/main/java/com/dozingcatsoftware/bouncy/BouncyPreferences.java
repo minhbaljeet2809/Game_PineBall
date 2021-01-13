@@ -8,7 +8,7 @@ public class BouncyPreferences extends PreferenceActivity {
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // If multitouch APIs aren't available, don't show preferences which require them.
+        //Nếu không có API cảm ứng đa điểm, đừng hiển thị các tùy chọn yêu cầu chúng.
         boolean hasMultitouch = false;
         try {
             MotionEvent.class.getField("ACTION_POINTER_INDEX_MASK");

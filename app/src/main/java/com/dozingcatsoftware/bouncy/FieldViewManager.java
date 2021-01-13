@@ -13,8 +13,8 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 
 /**
- * This class handles the common functionality for Canvas and OpenGL-based views, including mapping
- * world coordinates to pixels and handling touch events.
+ * Lớp này xử lý chức năng chung cho các khung nhìn dựa trên Canvas và OpenGL,
+ * bao gồm vẽ và sử lý các sự kiện chạm
  */
 
 public class FieldViewManager {
@@ -31,11 +31,10 @@ public class FieldViewManager {
     float maxZoom = 1.0f;
     int customLineWidth = 0;
 
-    // x/y offsets and scale are cached at the beginning of draw(), to avoid repeated calls as
-    // elements are drawn.
+
     private float cachedXOffset, cachedYOffset, cachedScale, cachedHeight;
 
-    // Delay after losing a ball, before a touch will launch a new ball.
+    //Trì hoãn sau khi mất bóng, trước khi chạm bóng sẽ tung ra một quả bóng mới.
     static final long END_BALL_DELAY_MS = 1000;
 
     public void setField(Field value) {
@@ -50,10 +49,7 @@ public class FieldViewManager {
         independentFlippers = value;
     }
 
-    // Line width can be specified directly, otherwise it's a fraction of the smaller width or
-    // height dimension. A factor of 1/216 works pretty well; on a 1080p display it's 5, which
-    // looks decent and performs reasonably; a Nexus 5x can do 40-50fps with the canvas view.
-    // (OpenGL can get 60fps but has lower visual quality due to not having antialiasing).
+
     public void setCustomLineWidth(int lineWidth) {
         customLineWidth = lineWidth;
     }
@@ -65,7 +61,6 @@ public class FieldViewManager {
     public int getLineWidth() {
         int cw = customLineWidth;
         int minDim = Math.min(fieldRenderer.getWidth(), fieldRenderer.getHeight());
-        // Line width of more than 1/60 of the screen size is too thick.
         int lineWidth = (cw > 0) ? Math.min(cw, minDim / 60) : minDim / 216;
         return Math.max(lineWidth, 1);
     }
@@ -84,7 +79,6 @@ public class FieldViewManager {
         return cachedScale;
     }
 
-    // Sets maxZoom ivar, zoom will still be 1 when game is not in progress.
     public void setZoom(float value) {
         maxZoom = value;
     }

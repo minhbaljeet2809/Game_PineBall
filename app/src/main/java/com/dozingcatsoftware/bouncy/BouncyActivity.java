@@ -78,7 +78,7 @@ public class BouncyActivity extends Activity {
 
     private static final String TAG = "BouncyActivity";
 
-    /** Called when the activity is first created. */
+    /** Được gọi khi activity khởi tạo ban đầu. */
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String arch = System.getProperty("os.arch");
@@ -95,8 +95,8 @@ public class BouncyActivity extends Activity {
         canvasFieldView.setManager(fieldViewManager);
 
         glFieldView = findViewById(R.id.glFieldView);
-        // Semi-arbitrary requirement for Android 6.0 or later to use the OpenGL ES 2.0 renderer.
-        // Older devices tend to perform better with 1.0.
+
+
         useOpenGL20 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M;
         if (useOpenGL20) {
             gl20Renderer = new GL20Renderer(glFieldView, (shaderPath) -> {
@@ -133,17 +133,10 @@ public class BouncyActivity extends Activity {
         unlimitedBallsToggle = findViewById(R.id.unlimitedBallsToggle);
 
         // TODO: allow field configuration to specify whether tilting is allowed
-        /*
-        orientationListener = new OrientationListener(this, SensorManager.SENSOR_DELAY_GAME,
-        		new OrientationListener.Delegate() {
-        	public void receivedOrientationValues(float azimuth, float pitch, float roll) {
-            	field.receivedOrientationValues(azimuth, pitch, roll);
-        	}
-        });
-         */
+
         updateFromPreferences();
 
-        // Initialize audio, loading resources in a separate thread.
+        // Khao báo audio, loading resources trong separate thread.
         VPSoundpool.initSounds(this);
         (new Thread(VPSoundpool::loadSounds)).start();
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -151,14 +144,14 @@ public class BouncyActivity extends Activity {
 
     @Override public void onResume() {
         super.onResume();
-        // Attempt to call setSystemUiVisibility(1) which is "low profile" mode.
+
         try {
             Method setUiMethod = View.class.getMethod("setSystemUiVisibility", int.class);
             setUiMethod.invoke(scoreView, 1);
         }
         catch (Exception ignored) {
         }
-        // Reset frame rate since app or system settings that affect performance could have changed.
+
         fieldDriver.resetFrameRate();
     }
 
@@ -168,16 +161,16 @@ public class BouncyActivity extends Activity {
     }
 
     @Override public void onWindowFocusChanged(boolean hasWindowFocus) {
-        // This handles the main activity pausing and resuming.
+        // Hành động main activity pausing and resuming.
         super.onWindowFocusChanged(hasWindowFocus);
         if (!hasWindowFocus) {
             pauseGame();
         }
         else {
-            // If game is in progress, return to the paused menu rather than immediately resuming.
+            // Nếu đang trong game sẽ về màn hình paused.
             if (field.getGameState().isGameInProgress()) {
                 if (glFieldView != null) {
-                    // This may result in multiple calls to onResume, but that seems to be ok.
+                    // Gọi đến onResume,
                     glFieldView.onResume();
                 }
                 fieldViewManager.draw();
@@ -190,8 +183,8 @@ public class BouncyActivity extends Activity {
     }
 
     @Override public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // When a game is in progress, pause rather than exit when the back button is pressed.
-        // This prevents accidentally quitting the game.
+        //Khi game đang chạy, sẽ tạm dừng thay vì thoát game khi ấn nút back
+        // Sẽ thoát game khi đang ở màn hình chờ bắt đầu
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (field.getGameState().isGameInProgress() && !field.getGameState().isPaused()) {
                 pauseGame();
@@ -258,14 +251,14 @@ public class BouncyActivity extends Activity {
         AboutActivity.startForLevel(this, this.currentLevel);
     }
 
-    // Update settings from preferences, called at launch and when preferences activity finishes.
+    // Cập nhật tùy chọn, Gọi khi khởi chạy và sau khi hoạt động tùy chọn kết thúc.
     void updateFromPreferences() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         fieldViewManager.setIndependentFlippers(prefs.getBoolean("independentFlippers", true));
         scoreView.setShowFPS(prefs.getBoolean("showFPS", false));
 
-        // If switching line width or OpenGL/Canvas, reset frame rate manager because maximum
-        // achievable frame rate may change.
+        // tùy chọn OpenGL/Canvas,
+        // Thay đổi tốc độ khung hình
         int lineWidth = 0;
         try {
             lineWidth = Integer.parseInt(prefs.getString("lineWidth", "0"));
@@ -298,7 +291,7 @@ public class BouncyActivity extends Activity {
         VPSoundpool.setMusicEnabled(prefs.getBoolean("music", true));
     }
 
-    // Called every 100 milliseconds while app is visible, to update score view and high score.
+    // Chạy mỗi 100 miligiay để chậy nhật điểm số và điểm cao
     void tick() {
         scoreView.invalidate();
         scoreView.setFPS(fieldDriver.getAverageFPS());
@@ -307,27 +300,27 @@ public class BouncyActivity extends Activity {
     }
 
     /**
-     * If the score of the current or previous game is greater than the previous high score,
-     * update high score in preferences and ScoreView. Also show button panel if game has ended.
+     * Nếu điểm của trận hiện tại hoặc trận trước lớn hơn điểm cao trước đó,
+     * cập nhật điểm cao trong sở thích và ScoreView. Đồng thời hiển thị bảng nút nếu trò chơi đã kết thúc..
      */
     void updateHighScoreAndButtonPanel() {
-        // We only need to check once when the game is over, before the button panel is visible.
+        // Ta kiểm ta một lần khi trò chơi kết thúc, trước khi kiển thị  bảng nút.
         if (buttonPanel.getVisibility() == View.VISIBLE) return;
         synchronized (field) {
             GameState state = field.getGameState();
             if (!field.getGameState().isGameInProgress()) {
-                // game just ended, show button panel and set end game timestamp
+                //trò chơi vừa kết thúc, hiển thị bảng điều khiển nút và đặt dấu thời gian kết thúc trò chơi
                 this.endGameTime = System.currentTimeMillis();
                 endGameButton.setVisibility(View.GONE);
                 switchTableButton.setVisibility(View.VISIBLE);
                 unlimitedBallsToggle.setVisibility(View.VISIBLE);
                 buttonPanel.setVisibility(View.VISIBLE);
 
-                // No high scores for unlimited balls.
+                //Không có điểm số cao cho các quả bóng không giới hạn.
                 if (!state.hasUnlimitedBalls()) {
                     long score = field.getGameState().getScore();
-                    // Add to high scores list if the score beats the lowest existing high score,
-                    // or if all the high score slots aren't taken.
+                    //Thêm vào danh sách điểm cao nếu điểm vượt qua điểm cao nhất hiện có,
+                    //hoặc nếu tất cả các vị trí điểm cao không được sử dụng.
                     if (score > highScores.get(this.highScores.size() - 1) ||
                             highScores.size() < MAX_NUM_HIGH_SCORES) {
                         this.updateHighScoreForCurrentLevel(score);
@@ -337,14 +330,14 @@ public class BouncyActivity extends Activity {
         }
     }
 
-    // Store separate high scores for each field, using unique suffix in prefs key.
+    // Lưu trữ điểm cao riêng biệt cho từng trường, sử dụng unique suffix in prefs key.
     String highScorePrefsKeyForLevel(int theLevel) {
         return HIGHSCORES_PREFS_KEY + "." + theLevel;
     }
 
     /**
-     * Returns a list of the high score stored in SharedPreferences. Always returns a nonempty
-     * list, which will be [0] if no high scores have been stored.
+     * Trả về danh sách điểm cao SharedPreferences. Luôn trả về giá trị 0
+     * danh sách, sẽ là [0] nếu không có điểm cao nào được lưu trữ.
      */
     List<Long> highScoresFromPreferences(int theLevel) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -363,7 +356,6 @@ public class BouncyActivity extends Activity {
             }
         }
         else {
-            // Check pre-1.5 single high score.
             long oldPrefsScore = prefs.getLong(OLD_HIGHSCORE_PREFS_KEY + "." + currentLevel, 0);
             return Collections.singletonList(oldPrefsScore);
         }
@@ -385,7 +377,7 @@ public class BouncyActivity extends Activity {
         return highScoresFromPreferences(currentLevel);
     }
 
-    /** Updates the high score in the ScoreView display, and persists it to SharedPreferences. */
+    /** Cập nhật điểm số cao trong màn hình ScoreView và duy trì nó với SharedPreferences.. */
     void updateHighScore(int theLevel, long score) {
         List<Long> newHighScores = new ArrayList<>(this.highScores);
         newHighScores.add(score);
@@ -417,13 +409,13 @@ public class BouncyActivity extends Activity {
         editor.commit();
     }
 
-    // Button action methods defined by android:onClick values in main.xml.
+    // Các thương thức hành động của nút được định nghĩa android:onClick values in main.xml.
     public void doStartGame(View view) {
         if (field.getGameState().isPaused()) {
             unpauseGame();
             return;
         }
-        // Avoids accidental starts due to touches just after game ends.
+        //Tránh bắt đầu ngẫu nhiên do chạm ngay sau khi trò chơi kết thúc
         if (endGameTime == null || (System.currentTimeMillis() < endGameTime + END_GAME_DELAY_MS)) {
             return;
         }
@@ -443,7 +435,7 @@ public class BouncyActivity extends Activity {
     }
 
     public void doEndGame(View view) {
-        // Game might be paused, if manually ended from button.
+        //Trò chơi có thể bị tạm dừng nếu kết thúc thủ công từ nút.
         unpauseGame();
         field.endGame();
     }
@@ -479,14 +471,13 @@ public class BouncyActivity extends Activity {
         this.setInitialLevel(currentLevel);
         this.highScores = this.highScoresFromPreferencesForCurrentLevel();
         scoreView.setHighScores(highScores);
-        // Performance can be different on different tables.
+        //hiệu suất có thể khác nhau trên các bảng khác nhau.
         fieldDriver.resetFrameRate();
     }
 
     void resetFieldForCurrentLevel() {
         field.resetForLayoutMap(FieldLayoutReader.layoutMapForLevel(this, currentLevel));
-        // Let the field run for a fraction of a second before it's drawn. Flippers are normally
-        // positioned horizontally at first, and this lets them drop before they're visible.
+        //Để trường chạy trong một phần giây trước khi nó được vẽ.
         synchronized (field) {
             field.tick((long) (250_000_000 * field.getTargetTimeRatio()), 4);
         }

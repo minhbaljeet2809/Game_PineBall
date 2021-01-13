@@ -35,8 +35,8 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer.Float
     }
 
     /**
-     * Called when the view is touched. Activates flippers, starts a new game if one is not in
-     * progress, and launches a ball if one is not in play.
+     * Được gọi khi chế độ xem được chạm vào. Activates flippers, bắt đầu game nếu chưa có tiến trình nào
+     * tạo bóng nếu nó chưa được chơi.
      */
     @Override public boolean onTouchEvent(MotionEvent event) {
         return manager.handleTouchEvent(event);
@@ -68,8 +68,7 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer.Float
         }
     }
 
-    // Implementation of IFieldRenderer drawing methods that FieldElement classes can call.
-    // Assumes cacheScaleAndOffsets has been called.
+
     @Override public void drawLine(float x1, float y1, float x2, float y2, int color) {
         this.paint.setColor(Color.toARGB(color));
         this.canvas.drawLine(
@@ -112,8 +111,6 @@ public class CanvasFieldView extends SurfaceView implements IFieldRenderer.Float
 
     @Override public void drawArc(float cx, float cy, float xRadius, float yRadius,
             float startAngle, float endAngle, int color) {
-        // Android drawArc draws in degrees clockwise with 0 at the top. Arguments to this function
-        // are in radians, counterclockwise with 0 to the right.
         this.paint.setColor(Color.toARGB(color));
         this.paint.setStyle(Paint.Style.STROKE);
         float wcx = manager.world2pixelX(cx);

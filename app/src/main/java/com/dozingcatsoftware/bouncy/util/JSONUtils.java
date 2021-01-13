@@ -13,8 +13,8 @@ import org.json.JSONObject;
 public class JSONUtils {
 
     /**
-     * If argument is a JSONArray or JSONObject, returns the equivalent List or Map. If argument
-     * is JSONObject.NULL, returns null. Otherwise, returns the argument unchanged.
+     * Nếu param là JSONArray hoặc JSONObject, trả về danh sách hoặc list tưởng ứng. nếu param
+     * ilà JSONObject.NULL, trả null. Nếu không, trả về argument không đổi.
      */
     public static Object objectFromJSONItem(Object jsonItem) {
         if (jsonItem == JSONObject.NULL) {
@@ -28,11 +28,11 @@ public class JSONUtils {
         }
         return jsonItem;
     }
-
     /**
-     * Returns a List with the same objects in the same order as jsonArray. Recursively converts
-     * nested JSONArray and JSONObject values to List and Map objects.
-     */
+    Trả về một danh sách dodoois tượng giống với jsonArray.
+    Chuyển đối JSONArray và JSONObject thành danh sách đối tượng
+    */
+
     public static List<Object> listFromJSONArray(JSONArray jsonArray) {
         List<Object> result = new ArrayList<>();
         try {
@@ -46,10 +46,7 @@ public class JSONUtils {
         return result;
     }
 
-    /**
-     * Returns a List with the same keys and values as jsonObject. Recursively converts nested
-     * JSONArray and JSONObject values to List and Map objects.
-     */
+
     public static Map<String, Object> mapFromJSONObject(JSONObject jsonObject) {
         Map<String, Object> result = new HashMap<>();
         try {

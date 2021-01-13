@@ -9,7 +9,7 @@ import android.view.Window;
 import android.widget.TextView;
 
 public class AboutActivity extends Activity {
-    /** Called when the activity is first created. */
+     /**  Được gọi khi Activity được tạo lần đầu tiên*/
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
